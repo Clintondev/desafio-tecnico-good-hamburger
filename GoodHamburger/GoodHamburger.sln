@@ -1,0 +1,64 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CF941505-DBBA-4321-8A21-3A4CDAC698F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Domain", "src\GoodHamburger.Domain\GoodHamburger.Domain.csproj", "{1DA4EF1A-B268-40AE-ACF3-FA95E6A747F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Application", "src\GoodHamburger.Application\GoodHamburger.Application.csproj", "{213EDCB7-84FF-4CF2-B8C5-5B66AB510B2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Infrastructure", "src\GoodHamburger.Infrastructure\GoodHamburger.Infrastructure.csproj", "{F61336D2-C416-40F2-A410-9104A31D2F21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.API", "src\GoodHamburger.API\GoodHamburger.API.csproj", "{EAD88E8D-62A5-42BA-9F2E-1FC452646EA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Web", "src\GoodHamburger.Web\GoodHamburger.Web.csproj", "{0944D9CD-70F5-44FF-89D4-CF54F9AD3A53}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{70907691-B725-4C57-920A-36E436518D5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Tests", "tests\GoodHamburger.Tests\GoodHamburger.Tests.csproj", "{0FC42C53-56A2-44AD-832C-6D52D24D88CF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1DA4EF1A-B268-40AE-ACF3-FA95E6A747F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DA4EF1A-B268-40AE-ACF3-FA95E6A747F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DA4EF1A-B268-40AE-ACF3-FA95E6A747F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DA4EF1A-B268-40AE-ACF3-FA95E6A747F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{213EDCB7-84FF-4CF2-B8C5-5B66AB510B2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{213EDCB7-84FF-4CF2-B8C5-5B66AB510B2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{213EDCB7-84FF-4CF2-B8C5-5B66AB510B2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{213EDCB7-84FF-4CF2-B8C5-5B66AB510B2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F61336D2-C416-40F2-A410-9104A31D2F21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F61336D2-C416-40F2-A410-9104A31D2F21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F61336D2-C416-40F2-A410-9104A31D2F21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F61336D2-C416-40F2-A410-9104A31D2F21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAD88E8D-62A5-42BA-9F2E-1FC452646EA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAD88E8D-62A5-42BA-9F2E-1FC452646EA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAD88E8D-62A5-42BA-9F2E-1FC452646EA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAD88E8D-62A5-42BA-9F2E-1FC452646EA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0944D9CD-70F5-44FF-89D4-CF54F9AD3A53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0944D9CD-70F5-44FF-89D4-CF54F9AD3A53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0944D9CD-70F5-44FF-89D4-CF54F9AD3A53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0944D9CD-70F5-44FF-89D4-CF54F9AD3A53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FC42C53-56A2-44AD-832C-6D52D24D88CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FC42C53-56A2-44AD-832C-6D52D24D88CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FC42C53-56A2-44AD-832C-6D52D24D88CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FC42C53-56A2-44AD-832C-6D52D24D88CF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1DA4EF1A-B268-40AE-ACF3-FA95E6A747F6} = {CF941505-DBBA-4321-8A21-3A4CDAC698F7}
+		{213EDCB7-84FF-4CF2-B8C5-5B66AB510B2B} = {CF941505-DBBA-4321-8A21-3A4CDAC698F7}
+		{F61336D2-C416-40F2-A410-9104A31D2F21} = {CF941505-DBBA-4321-8A21-3A4CDAC698F7}
+		{EAD88E8D-62A5-42BA-9F2E-1FC452646EA7} = {CF941505-DBBA-4321-8A21-3A4CDAC698F7}
+		{0944D9CD-70F5-44FF-89D4-CF54F9AD3A53} = {CF941505-DBBA-4321-8A21-3A4CDAC698F7}
+		{0FC42C53-56A2-44AD-832C-6D52D24D88CF} = {70907691-B725-4C57-920A-36E436518D5D}
+	EndGlobalSection
+EndGlobal
