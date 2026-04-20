@@ -1,0 +1,16 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: radial-gradient(circle at top right, #ffede8 0%, #fff8f7 42%, #fffdfc 100%);
+}
+
+a {
+    text-decoration: none;
+}
+
+#blazor-error-ui {
+    display: none;
+}

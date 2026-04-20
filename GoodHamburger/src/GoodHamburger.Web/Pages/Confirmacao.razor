@@ -1,0 +1,114 @@
+@page "/confirmacao/{Id:guid}"
+@using GoodHamburger.Web.Models
+@using GoodHamburger.Web.Services
+@inject OrderApiService OrderService
+@inject NavigationManager Nav
+
+<PageTitle>Pedido Confirmado - Good Hamburger</PageTitle>
+
+@if (_order is null)
+{
+    <div class="text-center py-16 text-[#5d403a]">Carregando pedido...</div>
+}
+else
+{
+    <div class="max-w-lg mx-auto px-5 py-12">
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <span class="material-symbols-outlined text-white text-4xl">check</span>
+            </div>
+            <h1 class="font-heading text-3xl font-extrabold text-primary">Pedido Confirmado!</h1>
+            <p class="text-[#5d403a] mt-2">Sua refeicao esta sendo preparada.</p>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-md border border-[#ede0df] overflow-hidden">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-xs uppercase tracking-wider text-[#5d403a]">Pedido</p>
+                        <p class="font-heading font-bold text-lg text-[#201a1a]">#GH-@_order.Id.ToString().Substring(0, 6).ToUpper()</p>
+                    </div>
+                    <span class="bg-[#ffddb0] text-[#694600] text-sm font-semibold px-3 py-1 rounded-full">@_order.Status</span>
+                </div>
+                <p class="text-sm text-[#5d403a]">@_order.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy 'as' HH:mm")</p>
+            </div>
+
+            <div class="border-t border-dashed border-[#ede0df] p-6 space-y-3">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-[#f2e5e5] rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-2xl text-primary opacity-40">lunch_dining</span>
+                    </div>
+                    <div class="flex-1"><p class="font-semibold text-[#201a1a]">@_order.SandwichName</p></div>
+                    <p class="font-heading font-extrabold text-primary">R$ @GetSandwichPrice(_order.Sandwich).ToString("F2")</p>
+                </div>
+
+                @if (_order.HasFries)
+                {
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-[#f2e5e5] rounded-xl flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-2xl text-primary opacity-40">set_meal</span>
+                        </div>
+                        <div class="flex-1"><p class="font-semibold text-[#201a1a]">Batata Frita</p></div>
+                        <p class="font-heading font-extrabold text-primary">R$ 2,00</p>
+                    </div>
+                }
+
+                @if (_order.HasDrink)
+                {
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-[#f2e5e5] rounded-xl flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-2xl text-primary opacity-40">local_drink</span>
+                        </div>
+                        <div class="flex-1"><p class="font-semibold text-[#201a1a]">Refrigerante</p></div>
+                        <p class="font-heading font-extrabold text-primary">R$ 2,50</p>
+                    </div>
+                }
+            </div>
+
+            <div class="border-t border-[#ede0df] bg-[#fef1f0] p-6 space-y-2">
+                <div class="flex justify-between text-sm text-[#5d403a]"><span>Subtotal</span><span>R$ @_order.Subtotal.ToString("F2")</span></div>
+                @if (_order.DiscountPercent > 0)
+                {
+                    <div class="flex justify-between text-sm text-secondary font-semibold">
+                        <span>Desconto (@_order.DiscountPercent%)</span>
+                        <span>- R$ @_order.DiscountAmount.ToString("F2")</span>
+                    </div>
+                }
+                <div class="flex justify-between items-center pt-2 border-t border-[#ede0df]">
+                    <span class="font-semibold text-[#201a1a]">Total Pago</span>
+                    <span class="font-heading text-2xl font-extrabold text-primary">R$ @_order.Total.ToString("F2")</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 mt-8">
+            <button @onclick="NovoPedido" class="flex-1 border-2 border-primary text-primary rounded-full py-3 font-semibold hover:bg-[#ffdad3]/30 transition">Novo Pedido</button>
+            <button @onclick="VoltarMenu" class="flex-1 bg-primary text-white rounded-full py-3 font-semibold hover:brightness-110 transition">Voltar ao Menu</button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private OrderModel? _order;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _order = await OrderService.GetByIdAsync(Id);
+    }
+
+    private void NovoPedido() => Nav.NavigateTo("/pedido");
+    private void VoltarMenu() => Nav.NavigateTo("/");
+
+    private static decimal GetSandwichPrice(SandwichType type)
+    {
+        return type switch
+        {
+            SandwichType.XBurger => 5.00m,
+            SandwichType.XEgg => 4.50m,
+            SandwichType.XBacon => 7.00m,
+            _ => 0m
+        };
+    }
+}

@@ -1,0 +1,170 @@
+@page "/pedido"
+@using GoodHamburger.Web.Models
+@using GoodHamburger.Web.Services
+@inject OrderApiService OrderService
+@inject NavigationManager Nav
+
+<PageTitle>Novo Pedido - Good Hamburger</PageTitle>
+
+<div class="max-w-6xl mx-auto px-5 py-8">
+    <h1 class="font-heading text-3xl font-extrabold text-[#201a1a] mb-2">Monte seu Pedido</h1>
+    <p class="text-[#5d403a] mb-8">Escolha seu sanduiche e adicione acompanhamentos para garantir desconto.</p>
+
+    <div class="flex flex-col md:flex-row gap-8">
+        <div class="flex-1 space-y-8">
+            <section>
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="font-heading text-xl font-bold text-[#201a1a]">Escolha o Sanduiche</h2>
+                    <span class="bg-primary text-white text-xs font-bold px-2 py-0.5 rounded-full">Obrigatorio</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    @foreach (var s in _sandwiches)
+                    {
+                        <label class="cursor-pointer">
+                            <input type="radio" name="sandwich" @onchange="() => _selectedSandwich = s.Type" class="sr-only" />
+                            <div class="border-2 rounded-2xl p-4 transition @(_selectedSandwich == s.Type ? "border-primary bg-[#ffdad3]/30" : "border-[#ede0df] bg-white hover:border-primary/40")">
+                                <div class="bg-[#f2e5e5] rounded-xl h-32 flex items-center justify-center mb-3">
+                                    <span class="material-symbols-outlined text-5xl text-primary opacity-30">lunch_dining</span>
+                                </div>
+                                <p class="font-heading font-bold text-[#201a1a]">@s.Name</p>
+                                <p class="font-heading text-lg font-extrabold text-primary mt-1">R$ @s.Price.ToString("F2")</p>
+                            </div>
+                        </label>
+                    }
+                </div>
+            </section>
+
+            <section>
+                <h2 class="font-heading text-xl font-bold text-[#201a1a] mb-4">Adicionar Acompanhamentos</h2>
+                <div class="space-y-3">
+                    <label class="cursor-pointer flex items-center gap-4 bg-white border-2 rounded-2xl p-4 transition @(_hasFries ? "border-primary bg-[#ffdad3]/20" : "border-[#ede0df] hover:border-primary/40")">
+                        <input type="checkbox" @bind="_hasFries" class="sr-only" />
+                        <div class="bg-[#f2e5e5] w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-3xl text-primary opacity-40">set_meal</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-[#201a1a]">Batata Frita</p>
+                            <p class="font-heading font-extrabold text-primary">R$ 2,00</p>
+                        </div>
+                    </label>
+
+                    <label class="cursor-pointer flex items-center gap-4 bg-white border-2 rounded-2xl p-4 transition @(_hasDrink ? "border-primary bg-[#ffdad3]/20" : "border-[#ede0df] hover:border-primary/40")">
+                        <input type="checkbox" @bind="_hasDrink" class="sr-only" />
+                        <div class="bg-[#f2e5e5] w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-3xl text-primary opacity-40">local_drink</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-[#201a1a]">Refrigerante</p>
+                            <p class="font-heading font-extrabold text-primary">R$ 2,50</p>
+                        </div>
+                    </label>
+                </div>
+            </section>
+        </div>
+
+        <aside class="md:w-80 md:sticky md:top-24 self-start">
+            <div class="bg-white rounded-2xl shadow-md border border-[#ede0df] p-6">
+                <h3 class="font-heading text-xl font-bold text-[#201a1a] mb-4">Resumo</h3>
+
+                <div class="space-y-2 text-sm text-[#5d403a] mb-4">
+                    @if (_selectedSandwich.HasValue)
+                    {
+                        <div class="flex justify-between">
+                            <span>@_sandwiches.First(s => s.Type == _selectedSandwich).Name</span>
+                            <span>R$ @_sandwiches.First(s => s.Type == _selectedSandwich).Price.ToString("F2")</span>
+                        </div>
+                    }
+                    @if (_hasFries)
+                    {
+                        <div class="flex justify-between"><span>Batata Frita</span><span>R$ 2,00</span></div>
+                    }
+                    @if (_hasDrink)
+                    {
+                        <div class="flex justify-between"><span>Refrigerante</span><span>R$ 2,50</span></div>
+                    }
+                </div>
+
+                <div class="border-t border-dashed border-[#ede0df] pt-4 mb-4 space-y-1 text-sm">
+                    <div class="flex justify-between text-[#5d403a]"><span>Subtotal</span><span>R$ @Subtotal.ToString("F2")</span></div>
+                    @if (DiscountPercent > 0)
+                    {
+                        <div class="flex justify-between text-secondary font-semibold"><span>Desconto (@DiscountPercent%)</span><span>- R$ @DiscountAmount.ToString("F2")</span></div>
+                    }
+                </div>
+
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-xs uppercase tracking-wider text-[#5d403a]">Total</span>
+                    <span class="font-heading text-3xl font-extrabold text-primary">R$ @Total.ToString("F2")</span>
+                </div>
+
+                <button @onclick="ConfirmarPedido"
+                        disabled="@(!_selectedSandwich.HasValue || _isLoading)"
+                        class="w-full bg-primary text-white font-heading text-lg font-bold py-4 rounded-full hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-md">
+                    @(_isLoading ? "Processando..." : "Confirmar Pedido")
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    @if (_errorMessage is not null)
+    {
+        <div class="mt-6 bg-red-50 border border-red-200 rounded-xl p-4 text-red-700">@_errorMessage</div>
+    }
+</div>
+
+@code {
+    private SandwichType? _selectedSandwich;
+    private bool _hasFries;
+    private bool _hasDrink;
+    private bool _isLoading;
+    private string? _errorMessage;
+
+    private record SandwichOption(SandwichType Type, string Name, decimal Price);
+
+    private readonly List<SandwichOption> _sandwiches =
+    [
+        new(SandwichType.XBurger, "X Burger", 5.00m),
+        new(SandwichType.XEgg, "X Egg", 4.50m),
+        new(SandwichType.XBacon, "X Bacon", 7.00m)
+    ];
+
+    private decimal Subtotal => (_selectedSandwich.HasValue ? _sandwiches.First(s => s.Type == _selectedSandwich).Price : 0)
+        + (_hasFries ? 2.00m : 0)
+        + (_hasDrink ? 2.50m : 0);
+
+    private decimal DiscountPercent => (_hasFries, _hasDrink) switch
+    {
+        (true, true) => 20m,
+        (false, true) => 15m,
+        (true, false) => 10m,
+        _ => 0m
+    };
+
+    private decimal DiscountAmount => Math.Round(Subtotal * DiscountPercent / 100, 2);
+    private decimal Total => Subtotal - DiscountAmount;
+
+    private async Task ConfirmarPedido()
+    {
+        if (!_selectedSandwich.HasValue)
+        {
+            return;
+        }
+
+        _isLoading = true;
+        _errorMessage = null;
+
+        try
+        {
+            var order = await OrderService.CreateAsync(new CreateOrderModel(_selectedSandwich.Value, _hasFries, _hasDrink));
+            Nav.NavigateTo($"/confirmacao/{order!.Id}");
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Erro ao confirmar pedido: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

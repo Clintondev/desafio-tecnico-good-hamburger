@@ -1,0 +1,156 @@
+@page "/admin"
+@using GoodHamburger.Web.Models
+@using GoodHamburger.Web.Services
+@inject OrderApiService OrderService
+
+<PageTitle>Gestao de Pedidos - Good Hamburger</PageTitle>
+
+<div class="max-w-6xl mx-auto px-5 py-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="font-heading text-3xl font-extrabold text-[#201a1a]">Gestao de Pedidos</h1>
+            <p class="text-[#5d403a]">Visualize e gerencie todos os pedidos.</p>
+        </div>
+        <button @onclick="CarregarPedidos" class="bg-primary text-white rounded-full px-5 py-2 font-semibold text-sm hover:brightness-110 transition">Atualizar</button>
+    </div>
+
+    @if (_orders is not null)
+    {
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-2xl border border-[#ede0df] p-4 shadow-sm">
+                <p class="text-xs text-[#5d403a] uppercase tracking-wide">Total de Pedidos</p>
+                <p class="font-heading text-3xl font-extrabold text-[#201a1a]">@_orders.Count</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#ede0df] p-4 shadow-sm">
+                <p class="text-xs text-[#5d403a] uppercase tracking-wide">Receita Total</p>
+                <p class="font-heading text-3xl font-extrabold text-primary">R$ @_orders.Sum(o => o.Total).ToString("F2")</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#ede0df] p-4 shadow-sm">
+                <p class="text-xs text-[#5d403a] uppercase tracking-wide">Ticket Medio</p>
+                <p class="font-heading text-3xl font-extrabold text-[#201a1a]">R$ @(_orders.Count > 0 ? _orders.Average(o => o.Total).ToString("F2") : "0,00")</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#ede0df] p-4 shadow-sm">
+                <p class="text-xs text-[#5d403a] uppercase tracking-wide">Pendentes</p>
+                <p class="font-heading text-3xl font-extrabold text-secondary">@_orders.Count(o => o.Status == OrderStatus.Pending)</p>
+            </div>
+        </div>
+    }
+
+    <div class="bg-white rounded-2xl border border-[#ede0df] shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-[#ede0df] flex flex-wrap gap-3">
+            @foreach (var filter in _filters)
+            {
+                <button @onclick="() => _activeFilter = filter"
+                        class="px-4 py-1.5 rounded-full text-sm font-semibold transition @(_activeFilter == filter ? "bg-primary text-white" : "bg-[#fef1f0] text-[#5d403a] hover:bg-[#f2e5e5]")">
+                    @filter
+                </button>
+            }
+        </div>
+
+        @if (_isLoading)
+        {
+            <div class="text-center py-12 text-[#5d403a]">Carregando pedidos...</div>
+        }
+        else if (_orders is null || !PedidosFiltrados.Any())
+        {
+            <div class="text-center py-12 text-[#5d403a]">Nenhum pedido encontrado.</div>
+        }
+        else
+        {
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-[#fef1f0] text-[#5d403a] uppercase text-xs tracking-wide">
+                        <tr>
+                            <th class="px-4 py-3 text-left">ID</th>
+                            <th class="px-4 py-3 text-left">Data/Hora</th>
+                            <th class="px-4 py-3 text-left">Itens</th>
+                            <th class="px-4 py-3 text-right">Subtotal</th>
+                            <th class="px-4 py-3 text-right">Desconto</th>
+                            <th class="px-4 py-3 text-right">Total</th>
+                            <th class="px-4 py-3 text-center">Status</th>
+                            <th class="px-4 py-3 text-center">Acoes</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#ede0df]">
+                        @foreach (var order in PedidosFiltrados)
+                        {
+                            <tr class="hover:bg-[#fef1f0] transition">
+                                <td class="px-4 py-3 font-mono text-xs text-[#5d403a]">#@order.Id.ToString().Substring(0, 8).ToUpper()</td>
+                                <td class="px-4 py-3 text-[#5d403a]">@order.CreatedAt.ToLocalTime().ToString("dd/MM/yy HH:mm")</td>
+                                <td class="px-4 py-3">
+                                    <p class="font-semibold text-[#201a1a]">@order.SandwichName</p>
+                                    <p class="text-xs text-[#5d403a]">@(order.HasFries ? "Batata " : "")@(order.HasDrink ? " Refri" : "")</p>
+                                </td>
+                                <td class="px-4 py-3 text-right text-[#5d403a]">R$ @order.Subtotal.ToString("F2")</td>
+                                <td class="px-4 py-3 text-right text-primary font-semibold">@(order.DiscountPercent > 0 ? $"- R$ {order.DiscountAmount:F2}" : "-")</td>
+                                <td class="px-4 py-3 text-right font-heading font-extrabold text-primary">R$ @order.Total.ToString("F2")</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold @GetStatusClass(order.Status)">@GetStatusLabel(order.Status)</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <button @onclick="() => DeletarPedido(order.Id)" class="text-red-400 hover:text-red-600 transition" title="Remover">
+                                        <span class="material-symbols-outlined text-lg">delete</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<OrderModel>? _orders;
+    private bool _isLoading = true;
+    private string _activeFilter = "Todos";
+
+    private readonly string[] _filters = ["Todos", "Pendente", "Confirmado", "Entregue", "Cancelado"];
+
+    private IEnumerable<OrderModel> PedidosFiltrados => _activeFilter == "Todos"
+        ? _orders ?? Enumerable.Empty<OrderModel>()
+        : (_orders ?? Enumerable.Empty<OrderModel>()).Where(o => GetStatusLabel(o.Status) == _activeFilter);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarPedidos();
+    }
+
+    private async Task CarregarPedidos()
+    {
+        _isLoading = true;
+        _orders = await OrderService.GetAllAsync();
+        _isLoading = false;
+    }
+
+    private async Task DeletarPedido(Guid id)
+    {
+        await OrderService.DeleteAsync(id);
+        _orders = _orders?.Where(o => o.Id != id).ToList();
+    }
+
+    private static string GetStatusLabel(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "Pendente",
+            OrderStatus.Confirmed => "Confirmado",
+            OrderStatus.Delivered => "Entregue",
+            OrderStatus.Cancelled => "Cancelado",
+            _ => status.ToString()
+        };
+    }
+
+    private static string GetStatusClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "bg-[#ffddb0] text-[#694600]",
+            OrderStatus.Confirmed => "bg-blue-100 text-blue-700",
+            OrderStatus.Delivered => "bg-[#ede0df] text-[#5d403a]",
+            OrderStatus.Cancelled => "bg-red-100 text-red-600",
+            _ => "bg-gray-100 text-gray-600"
+        };
+    }
+}

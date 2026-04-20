@@ -1,0 +1,97 @@
+@page "/"
+@using GoodHamburger.Web.Models
+@using GoodHamburger.Web.Services
+@inject MenuApiService MenuService
+@inject NavigationManager Nav
+
+<PageTitle>Cardapio - Good Hamburger</PageTitle>
+
+<div class="max-w-6xl mx-auto px-5 py-8">
+    <section class="bg-gradient-to-r from-primary to-[#e22d0a] rounded-2xl p-8 mb-10 text-white">
+        <h1 class="font-heading text-4xl font-extrabold mb-2">Combo com Desconto!</h1>
+        <p class="text-lg opacity-90 mb-6">Combine sanduiche, batata e refri e economize.</p>
+        <div class="flex flex-wrap gap-4">
+            <div class="bg-white/20 rounded-xl px-5 py-3 text-center">
+                <div class="font-heading text-2xl font-extrabold">10%</div>
+                <div class="text-sm">Sanduiche + Batata</div>
+            </div>
+            <div class="bg-white rounded-xl px-5 py-3 text-center text-primary shadow-lg">
+                <div class="font-heading text-2xl font-extrabold">15%</div>
+                <div class="text-sm font-semibold">Sanduiche + Refri</div>
+            </div>
+            <div class="bg-white/20 rounded-xl px-5 py-3 text-center">
+                <div class="font-heading text-2xl font-extrabold">20%</div>
+                <div class="text-sm">Combo Completo</div>
+            </div>
+        </div>
+    </section>
+
+    @if (_menu is null)
+    {
+        <div class="text-center py-16 text-[#5d403a]">Carregando cardapio...</div>
+    }
+    else
+    {
+        <section class="mb-10">
+            <h2 class="font-heading text-2xl font-bold text-[#201a1a] mb-6">Sanduiches</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                @foreach (var item in _menu.Sandwiches)
+                {
+                    <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-[#ede0df] hover:shadow-lg transition-shadow">
+                        <div class="bg-[#f2e5e5] h-44 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-7xl text-primary opacity-30">lunch_dining</span>
+                        </div>
+                        <div class="p-4 relative">
+                            <h3 class="font-heading text-lg font-bold text-[#201a1a]">@item.Name</h3>
+                            <p class="font-heading text-xl font-extrabold text-primary mt-1">R$ @item.Price.ToString("F2")</p>
+                            <button @onclick="IrParaPedido"
+                                    class="absolute bottom-4 right-4 bg-primary text-white rounded-full px-4 py-2 text-sm font-semibold hover:brightness-110 transition shadow">
+                                Pedir
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <section>
+            <h2 class="font-heading text-2xl font-bold text-[#201a1a] mb-6">Acompanhamentos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @foreach (var item in _menu.Sides)
+                {
+                    <div class="bg-white rounded-2xl shadow-sm border border-[#ede0df] p-4 flex items-center gap-4">
+                        <div class="bg-[#f2e5e5] w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-3xl text-primary opacity-40">
+                                @(item.Category == "Bebida" ? "local_drink" : "set_meal")
+                            </span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-[#201a1a]">@item.Name</p>
+                            <p class="font-heading text-lg font-extrabold text-primary">R$ @item.Price.ToString("F2")</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+</div>
+
+<button @onclick="IrParaPedido"
+        class="md:hidden fixed bottom-20 right-5 bg-primary text-white rounded-full px-5 py-3 font-semibold shadow-lg flex items-center gap-2 z-40">
+    <span class="material-symbols-outlined">shopping_basket</span>
+    Novo Pedido
+</button>
+
+@code {
+    private MenuModel? _menu;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _menu = await MenuService.GetMenuAsync();
+    }
+
+    private void IrParaPedido()
+    {
+        Nav.NavigateTo("/pedido");
+    }
+}

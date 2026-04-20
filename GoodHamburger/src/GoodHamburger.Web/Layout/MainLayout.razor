@@ -1,0 +1,33 @@
+@inherits LayoutComponentBase
+
+<div class="min-h-screen bg-[#fff8f7] font-body">
+    <header class="sticky top-0 z-50 bg-white shadow-sm border-b border-[#ede0df]">
+        <div class="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
+            <a href="/" class="font-heading text-2xl font-extrabold text-primary">Good Hamburger</a>
+            <nav class="hidden md:flex gap-6 text-sm font-semibold text-[#5d403a]">
+                <NavLink href="/" Match="NavLinkMatch.All" ActiveClass="text-primary">Menu</NavLink>
+                <NavLink href="/pedido" ActiveClass="text-primary">Novo Pedido</NavLink>
+                <NavLink href="/admin" ActiveClass="text-primary">Admin</NavLink>
+            </nav>
+        </div>
+    </header>
+
+    <main class="pb-24 md:pb-0">
+        @Body
+    </main>
+
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#ede0df] flex justify-around py-2 z-50 rounded-t-2xl shadow-lg">
+        <NavLink href="/" Match="NavLinkMatch.All" class="flex flex-col items-center text-xs text-[#5d403a]" ActiveClass="text-primary">
+            <span class="material-symbols-outlined text-2xl">restaurant_menu</span>
+            Menu
+        </NavLink>
+        <NavLink href="/pedido" class="flex flex-col items-center text-xs text-[#5d403a]" ActiveClass="text-primary">
+            <span class="material-symbols-outlined text-2xl">add_circle</span>
+            Pedido
+        </NavLink>
+        <NavLink href="/admin" class="flex flex-col items-center text-xs text-[#5d403a]" ActiveClass="text-primary">
+            <span class="material-symbols-outlined text-2xl">admin_panel_settings</span>
+            Admin
+        </NavLink>
+    </nav>
+</div>
