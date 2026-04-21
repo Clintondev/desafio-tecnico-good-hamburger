@@ -23,8 +23,8 @@
                         <label class="cursor-pointer">
                             <input type="radio" name="sandwich" @onchange="() => _selectedSandwich = s.Type" class="sr-only" />
                             <div class="border-2 rounded-2xl p-4 transition @(_selectedSandwich == s.Type ? "border-primary bg-[#ffdad3]/30" : "border-[#ede0df] bg-white hover:border-primary/40")">
-                                <div class="bg-[#f2e5e5] rounded-xl h-32 flex items-center justify-center mb-3">
-                                    <span class="material-symbols-outlined text-5xl text-primary opacity-30">lunch_dining</span>
+                                <div class="bg-[#f2e5e5] rounded-xl h-32 overflow-hidden mb-3">
+                                    <img src="@s.ImagePath" alt="@s.Name" class="w-full h-full object-cover" loading="lazy" />
                                 </div>
                                 <p class="font-heading font-bold text-[#201a1a]">@s.Name</p>
                                 <p class="font-heading text-lg font-extrabold text-primary mt-1">R$ @s.Price.ToString("F2")</p>
@@ -39,8 +39,8 @@
                 <div class="space-y-3">
                     <label class="cursor-pointer flex items-center gap-4 bg-white border-2 rounded-2xl p-4 transition @(_hasFries ? "border-primary bg-[#ffdad3]/20" : "border-[#ede0df] hover:border-primary/40")">
                         <input type="checkbox" @bind="_hasFries" class="sr-only" />
-                        <div class="bg-[#f2e5e5] w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <span class="material-symbols-outlined text-3xl text-primary opacity-40">set_meal</span>
+                        <div class="bg-[#f2e5e5] w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                            <img src="images/menu/fries.png" alt="Batata Frita" class="w-full h-full object-cover" loading="lazy" />
                         </div>
                         <div class="flex-1">
                             <p class="font-semibold text-[#201a1a]">Batata Frita</p>
@@ -50,8 +50,8 @@
 
                     <label class="cursor-pointer flex items-center gap-4 bg-white border-2 rounded-2xl p-4 transition @(_hasDrink ? "border-primary bg-[#ffdad3]/20" : "border-[#ede0df] hover:border-primary/40")">
                         <input type="checkbox" @bind="_hasDrink" class="sr-only" />
-                        <div class="bg-[#f2e5e5] w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <span class="material-symbols-outlined text-3xl text-primary opacity-40">local_drink</span>
+                        <div class="bg-[#f2e5e5] w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                            <img src="images/menu/drink.png" alt="Refrigerante" class="w-full h-full object-cover" loading="lazy" />
                         </div>
                         <div class="flex-1">
                             <p class="font-semibold text-[#201a1a]">Refrigerante</p>
@@ -119,13 +119,13 @@
     private bool _isLoading;
     private string? _errorMessage;
 
-    private record SandwichOption(SandwichType Type, string Name, decimal Price);
+    private record SandwichOption(SandwichType Type, string Name, decimal Price, string ImagePath);
 
     private readonly List<SandwichOption> _sandwiches =
     [
-        new(SandwichType.XBurger, "X Burger", 5.00m),
-        new(SandwichType.XEgg, "X Egg", 4.50m),
-        new(SandwichType.XBacon, "X Bacon", 7.00m)
+        new(SandwichType.XBurger, "X Burger", 5.00m, MenuImages.Get(SandwichType.XBurger)),
+        new(SandwichType.XEgg, "X Egg", 4.50m, MenuImages.Get(SandwichType.XEgg)),
+        new(SandwichType.XBacon, "X Bacon", 7.00m, MenuImages.Get(SandwichType.XBacon))
     ];
 
     private decimal Subtotal => (_selectedSandwich.HasValue ? _sandwiches.First(s => s.Type == _selectedSandwich).Price : 0)

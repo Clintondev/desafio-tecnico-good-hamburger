@@ -78,8 +78,15 @@
                                 <td class="px-4 py-3 font-mono text-xs text-[#5d403a]">#@order.Id.ToString().Substring(0, 8).ToUpper()</td>
                                 <td class="px-4 py-3 text-[#5d403a]">@order.CreatedAt.ToLocalTime().ToString("dd/MM/yy HH:mm")</td>
                                 <td class="px-4 py-3">
-                                    <p class="font-semibold text-[#201a1a]">@order.SandwichName</p>
-                                    <p class="text-xs text-[#5d403a]">@(order.HasFries ? "Batata " : "")@(order.HasDrink ? " Refri" : "")</p>
+                                    <div class="flex items-center gap-3 min-w-52">
+                                        <div class="w-12 h-12 bg-[#f2e5e5] rounded-lg overflow-hidden flex-shrink-0">
+                                            <img src="@MenuImages.Get(order.Sandwich)" alt="@order.SandwichName" class="w-full h-full object-cover" loading="lazy" />
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-[#201a1a]">@order.SandwichName</p>
+                                            <p class="text-xs text-[#5d403a]">@(order.HasFries ? "Batata " : "")@(order.HasDrink ? " Refri" : "")</p>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="px-4 py-3 text-right text-[#5d403a]">R$ @order.Subtotal.ToString("F2")</td>
                                 <td class="px-4 py-3 text-right text-primary font-semibold">@(order.DiscountPercent > 0 ? $"- R$ {order.DiscountAmount:F2}" : "-")</td>
@@ -153,4 +160,5 @@
             _ => "bg-gray-100 text-gray-600"
         };
     }
+
 }

@@ -35,8 +35,8 @@ else
 
             <div class="border-t border-dashed border-[#ede0df] p-6 space-y-3">
                 <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-[#f2e5e5] rounded-xl flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-2xl text-primary opacity-40">lunch_dining</span>
+                    <div class="w-16 h-16 bg-[#f2e5e5] rounded-xl overflow-hidden flex-shrink-0">
+                        <img src="@MenuImages.Get(_order.Sandwich)" alt="@_order.SandwichName" class="w-full h-full object-cover" loading="lazy" />
                     </div>
                     <div class="flex-1"><p class="font-semibold text-[#201a1a]">@_order.SandwichName</p></div>
                     <p class="font-heading font-extrabold text-primary">R$ @GetSandwichPrice(_order.Sandwich).ToString("F2")</p>
@@ -45,8 +45,8 @@ else
                 @if (_order.HasFries)
                 {
                     <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-[#f2e5e5] rounded-xl flex items-center justify-center flex-shrink-0">
-                            <span class="material-symbols-outlined text-2xl text-primary opacity-40">set_meal</span>
+                        <div class="w-16 h-16 bg-[#f2e5e5] rounded-xl overflow-hidden flex-shrink-0">
+                            <img src="images/menu/fries.png" alt="Batata Frita" class="w-full h-full object-cover" loading="lazy" />
                         </div>
                         <div class="flex-1"><p class="font-semibold text-[#201a1a]">Batata Frita</p></div>
                         <p class="font-heading font-extrabold text-primary">R$ 2,00</p>
@@ -56,8 +56,8 @@ else
                 @if (_order.HasDrink)
                 {
                     <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-[#f2e5e5] rounded-xl flex items-center justify-center flex-shrink-0">
-                            <span class="material-symbols-outlined text-2xl text-primary opacity-40">local_drink</span>
+                        <div class="w-16 h-16 bg-[#f2e5e5] rounded-xl overflow-hidden flex-shrink-0">
+                            <img src="images/menu/drink.png" alt="Refrigerante" class="w-full h-full object-cover" loading="lazy" />
                         </div>
                         <div class="flex-1"><p class="font-semibold text-[#201a1a]">Refrigerante</p></div>
                         <p class="font-heading font-extrabold text-primary">R$ 2,50</p>
@@ -111,4 +111,5 @@ else
             _ => 0m
         };
     }
+
 }

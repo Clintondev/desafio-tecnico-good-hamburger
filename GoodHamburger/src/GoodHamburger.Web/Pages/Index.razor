@@ -38,8 +38,8 @@
                 @foreach (var item in _menu.Sandwiches)
                 {
                     <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-[#ede0df] hover:shadow-lg transition-shadow">
-                        <div class="bg-[#f2e5e5] h-44 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-7xl text-primary opacity-30">lunch_dining</span>
+                        <div class="bg-[#f2e5e5] h-44 overflow-hidden">
+                            <img src="@MenuImages.Get(item.Id)" alt="@item.Name" class="w-full h-full object-cover" loading="lazy" />
                         </div>
                         <div class="p-4 relative">
                             <h3 class="font-heading text-lg font-bold text-[#201a1a]">@item.Name</h3>
@@ -60,10 +60,8 @@
                 @foreach (var item in _menu.Sides)
                 {
                     <div class="bg-white rounded-2xl shadow-sm border border-[#ede0df] p-4 flex items-center gap-4">
-                        <div class="bg-[#f2e5e5] w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <span class="material-symbols-outlined text-3xl text-primary opacity-40">
-                                @(item.Category == "Bebida" ? "local_drink" : "set_meal")
-                            </span>
+                        <div class="bg-[#f2e5e5] w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                            <img src="@MenuImages.Get(item.Id)" alt="@item.Name" class="w-full h-full object-cover" loading="lazy" />
                         </div>
                         <div class="flex-1">
                             <p class="font-semibold text-[#201a1a]">@item.Name</p>
@@ -94,4 +92,5 @@
     {
         Nav.NavigateTo("/pedido");
     }
+
 }
