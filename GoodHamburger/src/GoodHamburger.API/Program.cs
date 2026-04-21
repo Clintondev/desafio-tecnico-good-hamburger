@@ -3,6 +3,7 @@ using GoodHamburger.Application.Services;
 using GoodHamburger.Infrastructure;
 using GoodHamburger.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ var connectionString = builder.Configuration.GetConnectionString("Default")
 
 builder.Services.AddInfrastructure(connectionString);
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddHealthChecks();
 
 builder.Services.AddControllers()
     .AddJsonOptions(opts =>
@@ -23,6 +25,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "Good Hamburger API", Version = "v1" });
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
 });
 
 var allowedOrigins = builder.Configuration
@@ -89,6 +94,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("BlazorPolicy");
 app.UseAuthorization();
+app.MapHealthChecks("/health");
 app.MapControllers();
 
 app.Run();
