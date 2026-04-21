@@ -27,7 +27,7 @@ public class OrderService
         var order = await _repository.GetByIdAsync(id);
         if (order is null)
         {
-            return Result<OrderResponse>.Failure($"Pedido '{id}' nao encontrado.");
+            return Result<OrderResponse>.Failure($"Pedido '{id}' nao encontrado.", ErrorCode.NotFound);
         }
 
         return Result<OrderResponse>.Success(MapToResponse(order));
@@ -37,7 +37,10 @@ public class OrderService
     {
         try
         {
-            var order = Order.Create(request.Sandwich, request.HasFries, request.HasDrink);
+            var order = request.Items is null
+                ? Order.Create(request.Sandwich, request.HasFries, request.HasDrink)
+                : Order.Create(request.Sandwich, request.Items);
+
             await _repository.AddAsync(order);
             await _repository.SaveChangesAsync();
             return Result<OrderResponse>.Success(MapToResponse(order));
@@ -53,12 +56,20 @@ public class OrderService
         var order = await _repository.GetByIdAsync(id);
         if (order is null)
         {
-            return Result<OrderResponse>.Failure($"Pedido '{id}' nao encontrado.");
+            return Result<OrderResponse>.Failure($"Pedido '{id}' nao encontrado.", ErrorCode.NotFound);
         }
 
         try
         {
-            order.Update(request.Sandwich, request.HasFries, request.HasDrink);
+            if (request.Items is null)
+            {
+                order.Update(request.Sandwich, request.HasFries, request.HasDrink);
+            }
+            else
+            {
+                order.Update(request.Sandwich, request.Items);
+            }
+
             await _repository.UpdateAsync(order);
             await _repository.SaveChangesAsync();
             return Result<OrderResponse>.Success(MapToResponse(order));
@@ -74,7 +85,7 @@ public class OrderService
         var order = await _repository.GetByIdAsync(id);
         if (order is null)
         {
-            return Result.Failure($"Pedido '{id}' nao encontrado.");
+            return Result.Failure($"Pedido '{id}' nao encontrado.", ErrorCode.NotFound);
         }
 
         await _repository.DeleteAsync(order);

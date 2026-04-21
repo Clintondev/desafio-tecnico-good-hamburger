@@ -1,6 +1,7 @@
 using FluentAssertions;
 using GoodHamburger.Domain.Entities;
 using GoodHamburger.Domain.Enums;
+using GoodHamburger.Domain.Exceptions;
 
 namespace GoodHamburger.Tests.Domain;
 
@@ -97,5 +98,17 @@ public class OrderTests
 
         var expectedSubtotal = Order.XBaconPrice + Order.FriesPrice + Order.DrinkPrice;
         order.Subtotal.Should().Be(expectedSubtotal);
+    }
+
+    [Fact]
+    public void Create_WithDuplicatedSideItems_ShouldThrowDuplicateItemException()
+    {
+        var act = () => Order.Create(
+            SandwichType.XBurger,
+            new[] { OrderItemType.Fries, OrderItemType.Fries });
+
+        act.Should()
+            .Throw<DuplicateItemException>()
+            .WithMessage("*Batata Frita*");
     }
 }

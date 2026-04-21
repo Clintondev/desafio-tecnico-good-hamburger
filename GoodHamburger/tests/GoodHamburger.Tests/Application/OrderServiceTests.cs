@@ -1,4 +1,5 @@
 using FluentAssertions;
+using GoodHamburger.Application.Common;
 using GoodHamburger.Application.DTOs;
 using GoodHamburger.Application.Interfaces;
 using GoodHamburger.Application.Services;
@@ -61,6 +62,7 @@ public class OrderServiceTests
 
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().Contain("nao encontrado");
+        result.ErrorCode.Should().Be(ErrorCode.NotFound);
     }
 
     [Fact]
@@ -72,6 +74,24 @@ public class OrderServiceTests
 
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().Contain("nao encontrado");
+        result.ErrorCode.Should().Be(ErrorCode.NotFound);
+    }
+
+    [Fact]
+    public async Task CreateAsync_WithDuplicatedItems_ShouldReturnInvalidInputFailure()
+    {
+        var service = CreateService();
+        var request = new CreateOrderRequest(
+            SandwichType.XBurger,
+            HasFries: false,
+            HasDrink: false,
+            Items: new[] { OrderItemType.Drink, OrderItemType.Drink });
+
+        var result = await service.CreateAsync(request);
+
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorCode.Should().Be(ErrorCode.InvalidInput);
+        result.Error.Should().Contain("Refrigerante");
     }
 
     [Fact]

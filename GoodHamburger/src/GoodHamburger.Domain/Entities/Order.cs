@@ -42,6 +42,15 @@ public class Order
         return order;
     }
 
+    public static Order Create(SandwichType sandwich, IEnumerable<OrderItemType> sideItems)
+    {
+        var items = ValidateSideItems(sideItems);
+        return Create(
+            sandwich,
+            items.Contains(OrderItemType.Fries),
+            items.Contains(OrderItemType.Drink));
+    }
+
     public void Update(SandwichType sandwich, bool hasFries, bool hasDrink)
     {
         Sandwich = sandwich;
@@ -50,6 +59,15 @@ public class Order
         UpdatedAt = DateTime.UtcNow;
 
         RecalculatePricing();
+    }
+
+    public void Update(SandwichType sandwich, IEnumerable<OrderItemType> sideItems)
+    {
+        var items = ValidateSideItems(sideItems);
+        Update(
+            sandwich,
+            items.Contains(OrderItemType.Fries),
+            items.Contains(OrderItemType.Drink));
     }
 
     public void UpdateStatus(OrderStatus status)
@@ -89,5 +107,27 @@ public class Order
         SandwichType.XEgg => XEggPrice,
         SandwichType.XBacon => XBaconPrice,
         _ => throw new DomainException($"Sanduiche desconhecido: {type}")
+    };
+
+    private static IReadOnlyCollection<OrderItemType> ValidateSideItems(IEnumerable<OrderItemType> sideItems)
+    {
+        var items = sideItems.ToList();
+        var duplicate = items
+            .GroupBy(item => item)
+            .FirstOrDefault(group => group.Count() > 1);
+
+        if (duplicate is not null)
+        {
+            throw new DuplicateItemException(GetItemName(duplicate.Key));
+        }
+
+        return items;
+    }
+
+    private static string GetItemName(OrderItemType item) => item switch
+    {
+        OrderItemType.Fries => "Batata Frita",
+        OrderItemType.Drink => "Refrigerante",
+        _ => item.ToString()
     };
 }
