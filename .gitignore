@@ -3,3 +3,13 @@ IMPLEMENTATION_PLAN.md
 challenge_dotnet_stgen.pdf
 challenge_dotnet_stgen.pdf:Zone.Identifier
 stitch_good_hamburger_blazor_system/
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.suo
+*.db
+*.db-shm
+*.db-wal
+TestResults/
