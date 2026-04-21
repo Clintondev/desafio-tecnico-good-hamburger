@@ -95,9 +95,17 @@
                                     <span class="px-3 py-1 rounded-full text-xs font-semibold @GetStatusClass(order.Status)">@GetStatusLabel(order.Status)</span>
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    <button @onclick="() => DeletarPedido(order.Id)" class="text-red-400 hover:text-red-600 transition" title="Remover">
-                                        <span class="material-symbols-outlined text-lg">delete</span>
-                                    </button>
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button @onclick="() => AbrirDetalhes(order)" class="text-[#5d403a] hover:text-primary transition" title="Ver detalhes">
+                                            <span class="material-symbols-outlined text-lg">visibility</span>
+                                        </button>
+                                        <button @onclick="() => AbrirEdicao(order)" class="text-[#5d403a] hover:text-secondary transition" title="Editar">
+                                            <span class="material-symbols-outlined text-lg">edit</span>
+                                        </button>
+                                        <button @onclick="() => DeletarPedido(order.Id)" class="text-red-400 hover:text-red-600 transition" title="Remover">
+                                            <span class="material-symbols-outlined text-lg">delete</span>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -107,6 +115,177 @@
         }
     </div>
 </div>
+
+@* ── Modal: Detalhes do Pedido ── *@
+@if (_pedidoDetalhes is not null)
+{
+    <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @onclick="FecharDetalhes">
+        <div class="bg-white rounded-3xl shadow-xl max-w-md w-full overflow-hidden" @onclick:stopPropagation>
+            <div class="bg-primary p-6 text-white flex justify-between items-start">
+                <div>
+                    <p class="text-sm opacity-80 uppercase tracking-wide">Pedido</p>
+                    <p class="font-heading text-2xl font-extrabold">#GH-@_pedidoDetalhes.Id.ToString().Substring(0, 6).ToUpper()</p>
+                    <p class="text-sm opacity-80 mt-1">@_pedidoDetalhes.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy 'às' HH:mm")</p>
+                </div>
+                <button @onclick="FecharDetalhes" class="text-white/80 hover:text-white">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-3">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-[#f2e5e5] rounded-xl overflow-hidden flex-shrink-0">
+                        <img src="@MenuImages.Get(_pedidoDetalhes.Sandwich)" alt="@_pedidoDetalhes.SandwichName" class="w-full h-full object-cover" />
+                    </div>
+                    <div class="flex-1"><p class="font-semibold text-[#201a1a]">@_pedidoDetalhes.SandwichName</p></div>
+                    <p class="font-heading font-extrabold text-primary">R$ @GetSandwichPrice(_pedidoDetalhes.Sandwich).ToString("F2")</p>
+                </div>
+                @if (_pedidoDetalhes.HasFries)
+                {
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-[#f2e5e5] rounded-xl overflow-hidden flex-shrink-0">
+                            <img src="images/menu/fries.png" alt="Batata Frita" class="w-full h-full object-cover" />
+                        </div>
+                        <div class="flex-1"><p class="font-semibold text-[#201a1a]">Batata Frita</p></div>
+                        <p class="font-heading font-extrabold text-primary">R$ 2,00</p>
+                    </div>
+                }
+                @if (_pedidoDetalhes.HasDrink)
+                {
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-[#f2e5e5] rounded-xl overflow-hidden flex-shrink-0">
+                            <img src="images/menu/drink.png" alt="Refrigerante" class="w-full h-full object-cover" />
+                        </div>
+                        <div class="flex-1"><p class="font-semibold text-[#201a1a]">Refrigerante</p></div>
+                        <p class="font-heading font-extrabold text-primary">R$ 2,50</p>
+                    </div>
+                }
+            </div>
+
+            <div class="border-t border-[#ede0df] bg-[#fef1f0] px-6 py-4 space-y-1 text-sm">
+                <div class="flex justify-between text-[#5d403a]"><span>Subtotal</span><span>R$ @_pedidoDetalhes.Subtotal.ToString("F2")</span></div>
+                @if (_pedidoDetalhes.DiscountPercent > 0)
+                {
+                    <div class="flex justify-between text-secondary font-semibold">
+                        <span>Desconto (@_pedidoDetalhes.DiscountPercent%)</span>
+                        <span>- R$ @_pedidoDetalhes.DiscountAmount.ToString("F2")</span>
+                    </div>
+                }
+                <div class="flex justify-between items-center pt-2 border-t border-[#ede0df]">
+                    <span class="font-semibold text-[#201a1a]">Total</span>
+                    <span class="font-heading text-2xl font-extrabold text-primary">R$ @_pedidoDetalhes.Total.ToString("F2")</span>
+                </div>
+            </div>
+
+            <div class="p-4 flex justify-end gap-2">
+                <button @onclick="() => { FecharDetalhes(); AbrirEdicao(_pedidoDetalhes); }"
+                        class="flex items-center gap-1 border-2 border-secondary text-secondary rounded-full px-4 py-2 text-sm font-semibold hover:bg-[#ffddb0]/30 transition">
+                    <span class="material-symbols-outlined text-sm">edit</span> Editar
+                </button>
+                <button @onclick="FecharDetalhes"
+                        class="bg-primary text-white rounded-full px-4 py-2 text-sm font-semibold hover:brightness-110 transition">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@* ── Modal: Editar Pedido ── *@
+@if (_pedidoEdicao is not null)
+{
+    <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @onclick="FecharEdicao">
+        <div class="bg-white rounded-3xl shadow-xl max-w-lg w-full" @onclick:stopPropagation>
+            <div class="p-6 border-b border-[#ede0df] flex justify-between items-center">
+                <h2 class="font-heading text-xl font-bold text-[#201a1a]">
+                    Editar #GH-@_pedidoEdicao.Id.ToString().Substring(0, 6).ToUpper()
+                </h2>
+                <button @onclick="FecharEdicao" class="text-[#5d403a] hover:text-primary">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-6">
+                @* Seleção de sanduíche *@
+                <div>
+                    <p class="font-semibold text-[#201a1a] mb-3">Sanduíche</p>
+                    <div class="grid grid-cols-3 gap-3">
+                        @foreach (var s in _sandwichesEdicao)
+                        {
+                            <label class="cursor-pointer">
+                                <input type="radio" name="edit-sandwich" @onchange="() => _editSandwich = s.Type" class="sr-only" />
+                                <div class="border-2 rounded-xl p-3 text-center transition @(_editSandwich == s.Type ? "border-primary bg-[#ffdad3]/30" : "border-[#ede0df] hover:border-primary/40")">
+                                    <div class="w-full h-16 bg-[#f2e5e5] rounded-lg overflow-hidden mb-2">
+                                        <img src="@MenuImages.Get(s.Type)" alt="@s.Name" class="w-full h-full object-cover" />
+                                    </div>
+                                    <p class="text-xs font-bold text-[#201a1a]">@s.Name</p>
+                                    <p class="text-xs font-extrabold text-primary font-heading">R$ @s.Price.ToString("F2")</p>
+                                </div>
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                @* Acompanhamentos *@
+                <div>
+                    <p class="font-semibold text-[#201a1a] mb-3">Acompanhamentos</p>
+                    <div class="flex gap-3">
+                        <label class="flex-1 cursor-pointer flex items-center gap-3 border-2 rounded-xl p-3 transition @(_editFries ? "border-primary bg-[#ffdad3]/20" : "border-[#ede0df]")">
+                            <input type="checkbox" @bind="_editFries" class="sr-only" />
+                            <img src="images/menu/fries.png" class="w-10 h-10 rounded-lg object-cover" alt="Batata" />
+                            <div>
+                                <p class="text-sm font-semibold text-[#201a1a]">Batata Frita</p>
+                                <p class="text-xs font-extrabold text-primary font-heading">R$ 2,00</p>
+                            </div>
+                            @if (_editFries) { <span class="material-symbols-outlined text-primary ml-auto text-lg">check_circle</span> }
+                        </label>
+                        <label class="flex-1 cursor-pointer flex items-center gap-3 border-2 rounded-xl p-3 transition @(_editDrink ? "border-primary bg-[#ffdad3]/20" : "border-[#ede0df]")">
+                            <input type="checkbox" @bind="_editDrink" class="sr-only" />
+                            <img src="images/menu/drink.png" class="w-10 h-10 rounded-lg object-cover" alt="Refri" />
+                            <div>
+                                <p class="text-sm font-semibold text-[#201a1a]">Refrigerante</p>
+                                <p class="text-xs font-extrabold text-primary font-heading">R$ 2,50</p>
+                            </div>
+                            @if (_editDrink) { <span class="material-symbols-outlined text-primary ml-auto text-lg">check_circle</span> }
+                        </label>
+                    </div>
+                </div>
+
+                @* Resumo inline *@
+                <div class="bg-[#fef1f0] rounded-2xl p-4 space-y-1 text-sm">
+                    <div class="flex justify-between text-[#5d403a]"><span>Subtotal</span><span>R$ @EditSubtotal.ToString("F2")</span></div>
+                    @if (EditDiscount > 0)
+                    {
+                        <div class="flex justify-between text-secondary font-semibold">
+                            <span>Desconto (@EditDiscount%)</span><span>- R$ @EditDiscountAmount.ToString("F2")</span>
+                        </div>
+                    }
+                    <div class="flex justify-between items-center pt-2 border-t border-[#ede0df]">
+                        <span class="font-semibold text-[#201a1a]">Total</span>
+                        <span class="font-heading text-xl font-extrabold text-primary">R$ @EditTotal.ToString("F2")</span>
+                    </div>
+                </div>
+
+                @if (_editError is not null)
+                {
+                    <p class="text-red-600 text-sm bg-red-50 rounded-xl p-3">@_editError</p>
+                }
+            </div>
+
+            <div class="p-4 border-t border-[#ede0df] flex justify-end gap-2">
+                <button @onclick="FecharEdicao"
+                        class="border-2 border-[#ede0df] text-[#5d403a] rounded-full px-5 py-2 text-sm font-semibold hover:bg-[#f2e5e5] transition">
+                    Cancelar
+                </button>
+                <button @onclick="SalvarEdicao"
+                        disabled="@_editLoading"
+                        class="bg-primary text-white rounded-full px-5 py-2 text-sm font-semibold hover:brightness-110 transition disabled:opacity-50">
+                    @(_editLoading ? "Salvando..." : "Salvar alterações")
+                </button>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     private List<OrderModel>? _orders;
@@ -159,6 +338,101 @@
             OrderStatus.Cancelled => "bg-red-100 text-red-600",
             _ => "bg-gray-100 text-gray-600"
         };
+    }
+
+    // ── Modal Detalhes ──
+
+    private OrderModel? _pedidoDetalhes;
+
+    private void AbrirDetalhes(OrderModel order) => _pedidoDetalhes = order;
+    private void FecharDetalhes() => _pedidoDetalhes = null;
+
+    private static decimal GetSandwichPrice(SandwichType type) => type switch
+    {
+        SandwichType.XBurger => 5.00m,
+        SandwichType.XEgg    => 4.50m,
+        SandwichType.XBacon  => 7.00m,
+        _                    => 0m
+    };
+
+    // ── Modal Edição ──
+
+    private record SandwichOption(SandwichType Type, string Name, decimal Price);
+
+    private readonly List<SandwichOption> _sandwichesEdicao =
+    [
+        new(SandwichType.XBurger, "X Burger", 5.00m),
+        new(SandwichType.XEgg,    "X Egg",    4.50m),
+        new(SandwichType.XBacon,  "X Bacon",  7.00m),
+    ];
+
+    private OrderModel? _pedidoEdicao;
+    private SandwichType _editSandwich;
+    private bool _editFries;
+    private bool _editDrink;
+    private bool _editLoading;
+    private string? _editError;
+
+    private decimal EditSubtotal => _sandwichesEdicao.First(s => s.Type == _editSandwich).Price
+        + (_editFries ? 2.00m : 0) + (_editDrink ? 2.50m : 0);
+
+    private decimal EditDiscount => (_editFries, _editDrink) switch
+    {
+        (true,  true)  => 20m,
+        (false, true)  => 15m,
+        (true,  false) => 10m,
+        _              => 0m
+    };
+
+    private decimal EditDiscountAmount => Math.Round(EditSubtotal * EditDiscount / 100, 2);
+    private decimal EditTotal          => EditSubtotal - EditDiscountAmount;
+
+    private void AbrirEdicao(OrderModel order)
+    {
+        _pedidoEdicao  = order;
+        _editSandwich  = order.Sandwich;
+        _editFries     = order.HasFries;
+        _editDrink     = order.HasDrink;
+        _editError     = null;
+        _editLoading   = false;
+    }
+
+    private void FecharEdicao()
+    {
+        _pedidoEdicao = null;
+        _editError    = null;
+    }
+
+    private async Task SalvarEdicao()
+    {
+        if (_pedidoEdicao is null) return;
+
+        _editLoading = true;
+        _editError   = null;
+
+        try
+        {
+            var atualizado = await OrderService.UpdateAsync(
+                _pedidoEdicao.Id,
+                new CreateOrderModel(_editSandwich, _editFries, _editDrink));
+
+            // Atualiza a linha na tabela sem reload completo
+            if (_orders is not null && atualizado is not null)
+            {
+                var idx = _orders.FindIndex(o => o.Id == atualizado.Id);
+                if (idx >= 0) _orders[idx] = atualizado;
+            }
+
+            FecharEdicao();
+        }
+        catch (Exception ex)
+        {
+            _editError = $"Erro ao salvar: {ex.Message}";
+        }
+        finally
+        {
+            _editLoading = false;
+        }
     }
 
 }
