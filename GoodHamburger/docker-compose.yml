@@ -13,6 +13,12 @@ services:
       - "5000:8080"
     volumes:
       - goodhamburger_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   goodhamburger-web:
     build:
@@ -20,7 +26,8 @@ services:
       dockerfile: src/GoodHamburger.Web/Dockerfile
     container_name: goodhamburger-web
     depends_on:
-      - goodhamburger-api
+      goodhamburger-api:
+        condition: service_healthy
     ports:
       - "5200:80"
 

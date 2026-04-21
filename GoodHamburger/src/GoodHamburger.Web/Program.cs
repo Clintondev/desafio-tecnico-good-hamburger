@@ -7,9 +7,12 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+var apiBaseAddress = builder.Configuration["ApiBaseAddress"]
+    ?? throw new InvalidOperationException("ApiBaseAddress configuration is required.");
+
 builder.Services.AddScoped(_ => new HttpClient
 {
-    BaseAddress = new Uri("http://localhost:5000")
+    BaseAddress = new Uri(apiBaseAddress)
 });
 
 builder.Services.AddScoped<OrderApiService>();

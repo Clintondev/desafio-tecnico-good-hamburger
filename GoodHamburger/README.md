@@ -17,6 +17,7 @@ docker compose up -d --build
 ### URLs
 - Frontend: http://localhost:5200
 - API: http://localhost:5000
+- Health check da API: http://localhost:5000/health
 - Swagger JSON: http://localhost:5000/swagger/v1/swagger.json
 
 ### Logs
@@ -91,6 +92,8 @@ dotnet test GoodHamburger.sln
 ## Regras de negocio
 
 - Pedido sempre possui 1 sanduiche.
+- A API rejeita itens duplicados com HTTP 422 e mensagem clara.
+- Por compatibilidade com o frontend, pedidos aceitam `hasFries`/`hasDrink`; para validar duplicidade explicitamente, tambem aceitam `items`, por exemplo `["Fries", "Drink"]`.
 - Descontos:
   - 20%: sanduiche + batata + refrigerante
   - 15%: sanduiche + refrigerante
